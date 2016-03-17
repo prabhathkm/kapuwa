@@ -21,3 +21,4 @@ You can access the UI using http://localhost:7001/
 * JSON export
 * Aggregate
 * Multiple record match on same collection
+* collection name suggestions list
