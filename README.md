@@ -1,6 +1,9 @@
 # kapuwa
 "Matchmaking at database level" - MongoDB database viewer, view multiple collections and make relationships
 
+* Express UI
+* RSA encryption for secure communication when sending db details
+
 Will update more details here.. :)
 
 ## Introduction
