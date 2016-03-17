@@ -6,6 +6,11 @@
 
 Will update more details here.. :)
 
+## To do
+* JSON export
+* Aggregate
+* Multiple record match
+
 ## Introduction
 kapuwa is an node/express application which provides you facility to view mongodb databases/collections. You can navigate through collections in an efficient manner.
 
