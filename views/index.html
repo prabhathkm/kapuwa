@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head lang="en" data-include="head"></head>
+<body>
+
+
+<div class="kapuwaHeader">
+  <div class="logo"><span>" Matchmaking at database level "</span></div>
+  <div class="rightPane">
+
+    <div class="buttons">
+      <button type="button" id="showDbManager" class="btn" data-toggle="modal" data-target="#dbSelector">DB</button>
+    </div>
+    <div id="connectionDetails" class="connectionDetails">
+      <div class="name"></div>
+      <div class="desc"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="messageContainer">
+  <div class="messageBox">
+  </div>
+</div>
+
+<div class="kapuwaMainContainer">
+  <div class="col-md-5 dataView level1" id="dataView_set1" data-set="1"></div>
+  <div class="col-md-5 dataView level2 childLevel" id="dataView_set2" data-set="2"></div>
+  <div class="col-md-5 dataView level3 childLevel collapsed" id="dataView_set3" data-set="3"></div>
+  <div class="col-md-5 dataView level4 childLevel collapsed" id="dataView_set4" data-set="4"></div>
+</div>
+
+
+<!-- Modal -->
+<div id="dbSelector" class="modal fade dbSelector" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Database Manager</h4>
+      </div>
+      <div class="modal-body">
+        <h4>Connections</h4>
+        <p class="info">Click on a connection to use as active database.</p>
+        <div class="dbList">
+
+        </div>
+        <hr>
+        <h4>New Connection</h4>
+        <div class="newDb">
+
+          <div class="row">
+            <div class="form-group col-xs-8 col-md-8">
+              <label class="control-label">Connection Name</label>
+              <input type="text" class="form-control dbConnectionName" id="dbConnectionName" value=""/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-xs-8 col-md-8">
+              <label class="control-label">Server Address</label>
+              <input type="text" class="form-control dbServerAddress" id="dbServerAddress" value=""  placeholder="ex:127.0.0.1"/>
+            </div>
+            <div class="form-group col-xs-4 col-md-4">
+              <label class="control-label">Port</label>
+              <input type="text" class="form-control dbServerPort" id="dbServerPort" value="" placeholder="ex:3001"/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-xs-4 col-md-4">
+              <label class="control-label">Database</label>
+              <input type="text" class="form-control dbName" id="dbName" value=""/>
+            </div>
+            <div class="form-group col-xs-4 col-md-4">
+              <label class="control-label">Username</label>
+              <input type="text" class="form-control dbUsername" id="dbUsername" value=""/>
+            </div>
+            <div class="form-group col-xs-4 col-md-4">
+              <label class="control-label">Password</label>
+              <input type="password" class="form-control dbPassword" id="dbPassword" value=""/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group col-xs-12 col-md-12">
+              <button class="form-control ashButton" id="newConnection">Create New Connection</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script type="text/javascript">
+  var rootData = null;
+  try {
+    rootData = !{JSON.stringify(root.data)};
+  } catch(e){
+    console.log(e);
+  }
+</script>
+
+</body>
+</html>

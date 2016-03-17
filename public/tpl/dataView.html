@@ -1,0 +1,74 @@
+
+    <div class="levelHeader sidePadCommon">
+      <h3>Level <span class="levelNo"></span> <span class="collectionInfo"></span></h3>
+    </div>
+    <div class="levelContent">
+      <div class="dataSetView">
+      <div class="dataSetFilters">
+
+        <div class="row">
+          <div class="form-group col-xs-6 col-md-6">
+            <label class="control-label">Collection</label>
+            <input type="text" class="form-control dataSetCollection" value=""/>
+          </div>
+          <div class="form-group col-xs-6 col-md-6">
+            <label class="control-label">Caption Field</label>
+            <input type="text" class="form-control dataSetCaptionField" value="" placeholder="ex:displayName"/>
+          </div>
+        </div>
+
+        <div class="row connectFields">
+          <div class="form-group col-xs-6 col-md-6">
+            <label class="control-label">Match From</label>
+            <input type="text" class="form-control dataSetConnectFrom" value=""/>
+          </div>
+          <div class="form-group col-xs-6 col-md-6">
+            <label class="control-label">Match With</label>
+            <input type="text" class="form-control dataSetConnectTo" value=""/>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="form-group col-xs-12 col-md-12">
+            <label class="control-label">Filters</label>
+            <textarea class="form-control dataSetFilterFields"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-xs-6 col-md-6">
+            <label class="control-label">Visible Fields</label>
+            <textarea class="form-control dataSetVisibleFields"></textarea>
+          </div>
+          <div class="form-group col-xs-6 col-md-6">
+            <label class="control-label">Sort Options</label>
+            <textarea class="form-control dataSetSortFields"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-xs-12 col-md-12">
+            <button class="form-control dataFetch">Fetch Data</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-xs-12 col-md-12">
+            <div class="pageBar">
+              <input type="text" class="dataSkipValue"> to <span class="dataCountTo">0</span> of <span class="dataCountTotal">0</span> records.
+              <button class="dataSetPrev">Prev</button><button class="dataSetNext">Next</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="dataSetAreaWrap">
+        <div class="dataSetArea">
+        </div>
+      </div>
+      </div>
+    </div>
+
+

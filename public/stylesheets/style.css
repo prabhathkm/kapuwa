@@ -1,0 +1,428 @@
+
+body {
+    font: 14px "brix", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    width: 100%;
+    height: 100%;
+}
+
+p.info{
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.kapuwaHeader{
+    position: fixed;
+    top:0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: #F1F1F1;
+    border-bottom: 1px solid #DADADA;
+}
+
+.kapuwaHeader .logo{
+    margin: 0;
+    padding: 15px 0 10px 170px;
+    background: url(../images/kapuwaLogo.png) no-repeat 5px 0px;
+    height:50px;
+    display: block;
+    float: left;
+}
+
+.kapuwaHeader .logo span{
+    font-size: 14px;
+    font-style: italic;
+}
+
+.kapuwaHeader .rightPane{
+    display: block;
+    float: right;
+}
+
+.kapuwaHeader .connectionDetails,
+.kapuwaHeader .buttons
+{
+    display: block;
+    float: right;
+    text-align: right;
+    height: 36px;
+    padding: 7px 5px;
+}
+
+.kapuwaHeader .connectionDetails .name{
+    padding-top: 4px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.kapuwaHeader .connectionDetails .desc{
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.kapuwaHeader .connectionDetails .desc span{
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+.kapuwaMainContainer{
+    position: fixed;
+    top:50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    overflow: auto;
+    display: flex;
+    flex-direction: row;
+}
+
+
+.levelHeader{
+    height: 50px;
+}
+
+.levelContent{
+    flex: 1;
+    overflow: auto;
+}
+
+
+.levelHeader h3{
+    border-bottom: 1px solid #e3e3e3;
+    font-size: 22px;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    margin-top: 10px;
+}
+
+.levelHeader .collectionInfo{
+    float: right;
+    font-size: 18px;
+}
+
+.dataView{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.dataView.childLevel{
+    border-left: 5px solid #ccc;
+}
+
+.dataView.collapsed{
+    padding-right: 20px;
+    flex: 0;
+    background: #ddd;
+}
+
+
+
+.messageContainer{
+    display: block;
+    position: fixed;
+    top: 5px;
+    left: 200px;
+    right: 400px;
+    z-index: 99999;
+    text-align: center;
+    max-height: 5px;
+    overflow: visible;
+}
+
+.messageBox{
+    max-height: 5px;
+    overflow: visible;
+}
+
+.messageBox .message.hidden{
+    display: none;
+}
+
+.messageBox .message{
+    display: table;
+    margin: 5px auto;
+    min-width: 300px;
+    background: rgba(33, 187, 152, 0.89);
+    color: #333;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 5px 10px;
+    border: 1px solid #333;
+    cursor: pointer;
+    clear: both;
+}
+
+.messageBox .message.error{
+    background: #83262a;
+    color: #fff;
+}
+
+.dataSetFilters label,
+.newDb label{
+    font-size: 11px;
+    margin-bottom: 2px;
+}
+
+.dataSetFilters .form-group{
+    margin-bottom: 8px;
+}
+
+.dataSetFilters .form-control{
+    font-size: 13px;
+    height: 30px;
+}
+
+.dataSetFilters textarea.form-control{
+    height: 100%;
+}
+
+.dataSetFilters .connectFields.connected{
+    background: #ccc;
+}
+
+button.dataFetch,
+button.ashButton
+{
+    background: #757575;
+    color: #FFF;
+}
+
+.pageBar{
+    background: #E4E4E4;
+    padding: 5px;
+}
+
+.dataSkipValue{
+    width: 50px;
+    text-align: center;
+}
+
+.dataObjectWrap{
+    display: table;
+    width: 100%;
+    margin: 2px 0;
+    padding: 3px 0;
+}
+
+.dataObjectWrap>.dataObject
+{
+    display: table-cell;
+    overflow: auto;
+}
+
+.dataObjectWrap.selected{
+    background: #ccc;
+}
+
+.dataObjectWrap:hover{
+    background: #eaeaea;
+}
+
+
+
+.loader{
+    background: url("../images/loadingTube.gif") center center no-repeat;
+    display: block;
+    width: 100%;
+    height: 150px;
+}
+
+.dataSetArea .error{
+    font-size: 12px;
+    color: #8a2429;
+    padding: 15px;
+}
+
+
+.dataObject{
+    padding-left: 10px;
+
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.dataObject.hasChildren{
+    background: url("../images/arr_right_12.png") 0px 2px no-repeat;
+
+}
+
+.dataObject.hasChildren.expanded{
+    background: url("../images/arr_down_12.png") 0px 2px no-repeat;
+
+}
+
+.dataObject .caption{
+    display: inline-block;
+}
+
+.dataObjectSub{
+    margin-left: 10px;
+    border-left: 1px dashed #666 ;
+}
+
+.dataObject.hasChildren>.caption{
+    cursor: pointer;
+}
+
+.dataObjectNav{
+    display: table-cell;
+    width: 30px;
+    background: url(../images/arr_right_16.png) center center no-repeat #ddd;
+    cursor: pointer;
+}
+
+.dataObjectNav:hover{
+    background-color: #ccc;
+}
+
+
+
+/** level 2 */
+.dataView.level2{
+    border-color: #aedeea;
+}
+.dataView.level2 .levelHeader .collectionInfo{
+    color: #7EACD8;
+}
+.dataView.level2 .dataSetFilters .connectFields.connected,
+.dataView.level1 .dataObjectWrap.selected
+{
+    background-color: #aedeea;
+}
+.dataView.level1 .dataObjectNav{
+    background-color: #89bbd3;
+}
+.dataView.level1 .dataObjectNav:hover{
+    background-color: #6b9cbc;
+}
+
+/** level 3 */
+.dataView.level3{
+    border-color: #B3E6B4;
+}
+.dataView.level3 .levelHeader .collectionInfo{
+    color: #A9D6A6;
+}
+.dataView.level3.collapsed{
+    background: repeating-linear-gradient(
+            45deg,
+            #d5ffca,
+            #d5ffca 10px,
+            #c5f2bb 10px,
+            #c5f2bb 20px
+    );
+}
+.dataView.level3 .dataSetFilters .connectFields.connected,
+.dataView.level2 .dataObjectWrap.selected
+{
+     background-color: #B3E6B4;
+}
+.dataView.level2 .dataObjectNav{
+    background-color: #7ed180;
+}
+.dataView.level2 .dataObjectNav:hover{
+    background-color: #59bc66;
+}
+
+/** level 4 */
+.dataView.level4{
+    border-color: #f2d4ad;
+}
+.dataView.level4 .levelHeader .collectionInfo{
+    color: #D2B48C;
+}
+.dataView.level4.collapsed{
+    background: repeating-linear-gradient(
+            45deg,
+            #f1f2ce,
+            #f1f2ce 10px,
+            #ebe4b9 10px,
+            #ebe4b9 20px
+    );
+}
+.dataView.level4 .dataSetFilters .connectFields.connected,
+ .dataView.level3 .dataObjectWrap.selected
+ {
+     background-color: #f2d4ad;
+ }
+.dataView.level3 .dataObjectNav{
+    background-color: #d3b793;
+}
+.dataView.level3 .dataObjectNav:hover{
+    background-color: #bd9763;
+}
+
+
+/** side padding fix */
+.sidePadCommon,
+.dataSetFilters:not(.connectFields){
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+
+.dbList{
+    min-height: 150px;
+}
+
+.dbList .connection{
+    background: url("../images/dbicon.png") 8px center no-repeat #eee;
+    padding: 5px 10px 5px 47px;
+    margin-bottom: 7px;
+    cursor: pointer;
+}
+
+.dbList .connection:hover{
+    background-color: #d2d2d2;
+}
+
+.dbList .connection.selected {
+    background-color: #B5DC9F;
+}
+
+.dbList .connection .caption{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.dbList .connection .desc{
+    font-size: 12px;
+}
+
+.dbList .connection .desc span{
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.dbList .connection .deleteCon{
+    display: block;
+    float: right;
+    margin-top: -26px;
+    background: #ECB6B6;
+    color: #EEE;
+    padding: 3px 5px;
+}
+
+.dbList .connection .deleteCon:hover{
+    background: #cd6f68;
+}
