@@ -21,6 +21,10 @@ var DataManager = {
 
   removeConnection : function (opt, cb) {
     ajaxPostModel( "/data/removeConnection", opt, cb);
+  },
+
+  getCollections : function (opt, cb) {
+    ajaxPostModel( "/data/getCollections", opt, cb);
   }
 
 };

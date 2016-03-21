@@ -130,7 +130,21 @@ router.post('/getCollections/', function(req, res, next) {
     } else {
 
       db.listCollections().toArray( function(err, collections) {
-        console.log(err, collections);
+        if (err) {
+          res.send( JSON.stringify({ error: true, errorContent:err }) );
+        } else {
+
+          var collectionsArr = [];
+          var avoid = ["system.indexes"];
+
+          _.each(collections, function(field){
+            if(avoid.indexOf(field.name)<0){
+              collectionsArr.push(field.name);
+            }
+          });
+
+          res.send( JSON.stringify({error: false, collections: collectionsArr }) );
+        }
       });
 
     }

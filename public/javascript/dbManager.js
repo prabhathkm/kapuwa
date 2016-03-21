@@ -5,6 +5,8 @@
 var connections = null;
 var selectedConnection = null;
 
+var collectionList = [];
+
 $(function() {
 
   // initiate db manager
@@ -14,7 +16,6 @@ $(function() {
 
   // select connection
   $('.dbList').on('click','.connection', function(e){
-    console.log('HIT', $(this).data('dbtag'));
     selectConnection(connections[$(this).data('dbtag')]);
     $('#dbSelector').modal('hide');
   });
@@ -173,10 +174,23 @@ function selectConnection(con){
     selectedConnection = con.dbTag;
     $('#connectionDetails .name').html(con.name);
     $('#connectionDetails .desc').html('<span>Server: </span>'+con.server+'<span>Database: </span>'+con.db);
+
+    // get collections
+    DataManager.getCollections({
+      connection: con.dbTag
+    }, function (resp) {
+      if(!resp.error){
+        collectionList = resp.collections;
+        updateCollectionSuggestions();
+      } else {
+        console.log(resp.error, resp.errorContent);
+      }
+    });
+
   } else {
     selectedConnection = null;
+    collectionList = null;
     $('#connectionDetails .name').html('');
     $('#connectionDetails .desc').html('');
   }
-
 }

@@ -427,6 +427,8 @@ function loadDataSetView(setNo, independent, disabled, cb){
       $dataView.addClass('disabled');
     }
 
+    updateCollectionSuggestions();
+
     cb();
 
   });
@@ -435,6 +437,14 @@ function loadDataSetView(setNo, independent, disabled, cb){
 // mark error fields
 function markComponentAsError($parentElem, className) {
   $parentElem.find('.form-group:has(.'+className+')').addClass('has-error');
+}
+
+function updateCollectionSuggestions(){
+  if( collectionList && collectionList.length>0 ){
+    $(".dataSetCollection").autocomplete({
+      source: collectionList
+    });
+  }
 }
 
 
