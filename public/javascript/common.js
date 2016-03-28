@@ -6,6 +6,7 @@ var selectedObjects = {};
 var allObjects = {};
 
 var maxLevels = 4;
+var selectedJsonLevel = 0;
 
 $(function() {
 
@@ -25,7 +26,6 @@ $(function() {
     $dataSetFullAreaElem.find('.form-group').removeClass('has-error');
 
     validateDataSetInputs($dataSetFullAreaElem, set, function(err, validatedData) {
-      console.log(validatedData);
       if(!err && validatedData){
         fetchAndDrawDataSet(set, $dataSetFullAreaElem,
             validatedData.visibleFieldsJson,
@@ -50,8 +50,7 @@ $(function() {
   $('.kapuwaMainContainer').on('click','.dataSetJson', function(e) {
 
     var set = $(this).data('set');
-    var jsonText = "";
-    var currentDataSet = allObjects[set];
+    $('#jsonDisplay').height( $(window).height()*0.5 );
 
     // set title
     var titleArray = [('Level '+set)];
@@ -60,6 +59,23 @@ $(function() {
       titleArray.push(colInfo);
     }
     $('#jsonDisplayTitle').html( titleArray.join(', ') );
+    selectedJsonLevel= set;
+
+    // trigger visible mode
+    $('.jsonRecordMode.visibleMode').click();
+
+  });
+
+  //json mode change
+  $('.jsonRecordMode').on('click', function(e) {
+    $('.jsonRecordMode').removeClass('selected');
+    $(this).addClass('selected');
+
+    var jsonText = "";
+    var $jsonDisplay = $('#jsonDisplay');
+    $jsonDisplay.text( 'Loading...' );
+
+    $('#jsonDisplayMessage').html('');
 
 
     var dataObjToJsonDisplayIterator = function (datObjSet, level, isInArray) {
@@ -120,10 +136,56 @@ $(function() {
       return textArray.join(',\n');
     };
 
-    jsonText = dataObjToJsonDisplayIterator( currentDataSet, 1);
-    var $jsonDisplay = $('#jsonDisplay');
-    $jsonDisplay.height( $(window).height()*0.5 );
-    $jsonDisplay.text( '{\n'+ jsonText + '\n}' );
+    if( $(this).hasClass('allMode') ){
+      // show all records
+      var $dataSetFullAreaElem = $('#dataSetView'+selectedJsonLevel);
+      validateDataSetInputs( $dataSetFullAreaElem , selectedJsonLevel, function(err, validatedData) {
+        if(!err && validatedData){
+          fetchDataSet(selectedJsonLevel, $dataSetFullAreaElem,
+              validatedData.visibleFieldsJson,
+              validatedData.filterFieldsJson ,
+              validatedData.collectionIn,
+              validatedData.sortFieldsJson,
+              validatedData.skipValueIn,
+              {
+                independent : validatedData.independent,
+                connectFrom : validatedData.connectFrom,
+                connectTo   : validatedData.connectTo,
+                fullDataSet : true
+              },
+              function(resp){
+                if(!resp.error){
+                  var fullDataSet = resp.data;
+                  jsonText = dataObjToJsonDisplayIterator( fullDataSet, 1);
+                  $jsonDisplay.text( '{\n'+ jsonText + '\n}' );
+
+                  // exceeds max limit
+                  if(resp.total>resp.fullDataSetMaxRecordLimit){
+                    var msgText = "Data set returns "+resp.total+" records, only first "+resp.fullDataSetMaxRecordLimit+" records were loaded !";
+                    MESSAGE_BOT.addMessage(msgText, MESSAGE_BOT.MESSAGE_TYPES.LONG_STAY);
+                    $('#jsonDisplayMessage').html(msgText);
+                  } else {
+                    MESSAGE_BOT.addMessage(resp.total+" record(s) were loaded !", MESSAGE_BOT.MESSAGE_TYPES.LONG_STAY);
+                  }
+
+                } else {
+                  MESSAGE_BOT.addMessage("Data fetching error...", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+                  console.log(resp.errorContent);
+                }
+              }
+          );
+        }
+      });
+
+
+
+    } else {
+      // show visible records
+      var currentDataSet = allObjects[selectedJsonLevel];
+      jsonText = dataObjToJsonDisplayIterator( currentDataSet, 1);
+      $jsonDisplay.text( '{\n'+ jsonText + '\n}' );
+    }
+
 
   });
 
@@ -250,66 +312,20 @@ function fetchAndDrawDataSet(setNo, $dataSetFullAreaElem, visibleFieldsJson, fil
   $dataSetFullAreaElem.find('.form-group').removeClass('has-error');
 
   $dataSetAreaElem = $dataSetFullAreaElem.find('.dataSetArea');
-  moreOpt = moreOpt || {};
-
-  collectionIn = FeUtils.trim(collectionIn);
   captionFieldIn = FeUtils.trim(captionFieldIn);
   if(captionFieldIn =='' ){
     captionFieldIn = '_id';
   }
 
-  if(!selectedConnection){
-    MESSAGE_BOT.addMessage("No database selected, select a connection on database manager.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-    $('#showDbManager').click();
-    return true;
-  }
-
-  if(!collectionIn){
-    MESSAGE_BOT.addMessage("No collection name defined.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-    markComponentAsError($dataSetFullAreaElem,'dataSetCollection');
-    return true;
-  }
-
-  //connection filters
-  if(!moreOpt.independent) {
-
-    var selectedObject = selectedObjects[(setNo-1)];
-    if(!selectedObject){
-      MESSAGE_BOT.addMessage("No record selected on level-"+(setNo-1)+".", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-      markComponentAsError($dataSetFullAreaElem,'dataSetConnectFrom');
-      return true;
-    }
-
-    if(!moreOpt.connectFrom){
-      MESSAGE_BOT.addMessage("No 'Connect From' field defined.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-      markComponentAsError($dataSetFullAreaElem,'dataSetConnectFrom');
-      return true;
-    }
-    if(!moreOpt.connectTo){
-      MESSAGE_BOT.addMessage("No 'Connect With' field defined.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-      markComponentAsError($dataSetFullAreaElem,'dataSetConnectTo');
-      return true;
-    }
-
-    // add connection filters
-    var connectVal = null;
-    if(selectedObject[moreOpt.connectFrom]){
-      connectVal = selectedObject[moreOpt.connectFrom];
-    }
-    filterFieldsJson[moreOpt.connectTo] = connectVal;
-  }
-
   // loading
   $dataSetAreaElem.append('<div class="loader"></div>');
 
-  DataManager.getDataSet({
-    connection: selectedConnection,
-    collection: collectionIn,
-    filterFields: filterFieldsJson,
-    visibleFields: visibleFieldsJson,
-    sortFields: sortFieldsJson,
-    skipValue: skipValueIn
-  }, function (resp) {
+  // load data
+  fetchDataSet(setNo, $dataSetFullAreaElem, visibleFieldsJson, filterFieldsJson, collectionIn,
+      sortFieldsJson,
+      skipValueIn,
+      moreOpt
+  , function (resp) {
 
     $dataSetAreaElem.find('.loader').remove();
 
@@ -432,6 +448,65 @@ function fetchAndDrawDataSet(setNo, $dataSetFullAreaElem, visibleFieldsJson, fil
       $dataSetAreaElem.append('<div class="error">'+resp.errorContent+'</div>');
       console.log(resp.errorContent);
     }
+  });
+}
+
+
+function fetchDataSet(setNo, $dataSetFullAreaElem, visibleFieldsJson, filterFieldsJson, collectionIn, sortFieldsJson, skipValueIn, moreOpt, cb){
+  moreOpt = moreOpt || {};
+  collectionIn = FeUtils.trim(collectionIn);
+
+  if(!selectedConnection){
+    MESSAGE_BOT.addMessage("No database selected, select a connection on database manager.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+    $('#showDbManager').click();
+    return true;
+  }
+
+  if(!collectionIn){
+    MESSAGE_BOT.addMessage("No collection name defined.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+    markComponentAsError($dataSetFullAreaElem,'dataSetCollection');
+    return true;
+  }
+
+  //connection filters
+  if(!moreOpt.independent) {
+
+    var selectedObject = selectedObjects[(setNo-1)];
+    if(!selectedObject){
+      MESSAGE_BOT.addMessage("No record selected on level-"+(setNo-1)+".", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+      markComponentAsError($dataSetFullAreaElem,'dataSetConnectFrom');
+      return true;
+    }
+
+    if(!moreOpt.connectFrom){
+      MESSAGE_BOT.addMessage("No 'Connect From' field defined.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+      markComponentAsError($dataSetFullAreaElem,'dataSetConnectFrom');
+      return true;
+    }
+    if(!moreOpt.connectTo){
+      MESSAGE_BOT.addMessage("No 'Connect With' field defined.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+      markComponentAsError($dataSetFullAreaElem,'dataSetConnectTo');
+      return true;
+    }
+
+    // add connection filters
+    var connectVal = null;
+    if(selectedObject[moreOpt.connectFrom]){
+      connectVal = selectedObject[moreOpt.connectFrom];
+    }
+    filterFieldsJson[moreOpt.connectTo] = connectVal;
+  }
+
+  DataManager.getDataSet({
+    connection: selectedConnection,
+    collection: collectionIn,
+    filterFields: filterFieldsJson,
+    visibleFields: visibleFieldsJson,
+    sortFields: sortFieldsJson,
+    skipValue: skipValueIn,
+    fullDataSet: moreOpt.fullDataSet
+  }, function (resp) {
+    cb(resp);
   });
 }
 

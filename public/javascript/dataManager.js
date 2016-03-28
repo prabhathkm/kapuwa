@@ -79,7 +79,8 @@ var ajaxPostModel = function (url,data,cb) {
       url: url,
       type: "POST",
       dataType: 'json',
-      data: data
+      data: data,
+      timeout: 60000
     },
     function(resp) {
       cb(resp);

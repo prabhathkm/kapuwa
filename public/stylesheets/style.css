@@ -475,3 +475,13 @@ button.dataSetJson{
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
+.jsonRecordMode{
+    font-size: 13px;
+    line-height: 14px;
+    padding: 4px 9px;
+}
+
+.jsonRecordMode.selected{
+    background-color: #A2C36D;
+}

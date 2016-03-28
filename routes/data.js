@@ -15,6 +15,7 @@ var consoleOut = function (text) {
 };
 
 var maxRecordLimit = 50;
+var fullDataSetMaxRecordLimit = 5000;
 
 
 
@@ -81,6 +82,13 @@ router.post('/getDataSet/', function(req, res, next) {
   // clean filter fields
   filterFields = cleaningNestedObject(filterFields);
 
+  // full dataset
+  var maxRecordLimitToUse = maxRecordLimit;
+  if(req.body.fullDataSet){
+    skipValue = 0;
+    maxRecordLimitToUse = fullDataSetMaxRecordLimit;
+  }
+
 
   DbConnector.getConnection(dbConnection, function (err,db) {
     if(err) {
@@ -96,14 +104,21 @@ router.post('/getDataSet/', function(req, res, next) {
             visibleFields
           ) .sort(sortFields)
             .skip(skipValue)
-            .limit(maxRecordLimit)
+            .limit(maxRecordLimitToUse)
             .toArray( function(err, results){
 
               if (err) {
                 consoleOut(' No matching record. ' + err);
                 res.send( JSON.stringify({ error: true, errorContent:err }) );
               } else {
-                res.send( JSON.stringify({error: false, data: results, total: count , skip:skipValue, pageSize: maxRecordLimit }) );
+                res.send( JSON.stringify({
+                  error: false,
+                  data: results,
+                  total: count ,
+                  skip:skipValue,
+                  pageSize: maxRecordLimit ,
+                  fullDataSetMaxRecordLimit: fullDataSetMaxRecordLimit
+                }) );
               }
 
           });

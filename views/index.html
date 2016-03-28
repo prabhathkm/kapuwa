@@ -110,10 +110,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">JSON Export <span class="jsonDisplayTitle" id="jsonDisplayTitle"></span></h4>
+        <h4 class="modal-title">JSON Export
+          <button class="btn jsonRecordMode visibleMode">Visible records</button> <button class="btn jsonRecordMode allMode" data-allmode="true">All records</button>
+          <span class="jsonDisplayTitle" id="jsonDisplayTitle"></span>
+        </h4>
       </div>
       <div class="modal-body">
         <div class="jsonDisplayWrap col-xs-12 col-md-12">
+          <span id="jsonDisplayMessage"></span>
           <textarea class="jsonDisplay col-xs-12 col-md-12" id="jsonDisplay" readonly></textarea>
         </div>
       </div>
