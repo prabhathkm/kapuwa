@@ -6,6 +6,10 @@ body {
     height: 100%;
 }
 
+.btn:hover{
+    background-color: #a3a3a3;
+}
+
 p.info{
     font-size: 13px;
     margin-top: 5px;
@@ -89,12 +93,16 @@ p.info{
 }
 
 
-.levelHeader h3{
+.levelHeader .title{
     border-bottom: 1px solid #e3e3e3;
     font-size: 22px;
     padding-bottom: 8px;
     margin-bottom: 12px;
     margin-top: 10px;
+}
+
+.levelHeader .title .caption{
+    display: inline-block;
 }
 
 .levelHeader .collectionInfo{
@@ -437,4 +445,33 @@ button.ashButton
     background: #ebebeb;
     color: #3578cf;
     border-color: #ebebeb ;
+}
+
+
+/* JSON display area */
+button.dataSetJson{
+    font-size: 11px;
+    vertical-align: middle;
+    line-height: 9px;
+    padding: 6px;
+    margin-left: 9px;
+    background-color: #DAC399;
+}
+
+.jsonDisplayTitle{
+    float: right;
+    font-size: 14px;
+    margin-right: 20px;
+}
+
+.jsonDisplayWrap{
+    display: inline-block;
+    float: none;
+}
+
+.jsonDisplay{
+    display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }

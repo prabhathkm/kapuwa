@@ -13,6 +13,7 @@ $(function() {
   loadDataSetView(2, false, true);
 
 
+  // data set fetch
   $('.kapuwaMainContainer').on('click','.dataFetch', function(e){
 
     var set = $(this).data('set');
@@ -20,54 +21,112 @@ $(function() {
     var $dataSetFullAreaElem = $('#dataSetView'+set);
     $dataSetFullAreaElem.find('.dataSetArea').empty();
 
-    var collectionIn = $('input#dataSetCollection'+set).val();
-    var filterFieldsIn = $('textarea#dataSetFilterFields'+set).val();
-    var visibleFieldsIn = $('textarea#dataSetVisibleFields'+set).val();
-    var sortFieldsIn = $('textarea#dataSetSortFields'+set).val();
-    var skipValueIn = $('input#dataSkipValue'+set).val();
-    var captionField = $('input#dataSetCaptionField'+set).val();
-
-    var independent = $(this).data('independent');
-    var connectFrom = $('input#dataSetConnectFrom'+set).val();
-    var connectTo = $('input#dataSetConnectTo'+set).val();
-
-
     //clear previous error marks
     $dataSetFullAreaElem.find('.form-group').removeClass('has-error');
 
-    FeUtils.getJsonFromString(filterFieldsIn, function(err, filterFieldsJson){
-      if(err){
-        MESSAGE_BOT.addMessage("Error on 'Filters' field.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-        markComponentAsError($dataSetFullAreaElem,'dataSetFilterFields');
-        console.log(err);
-      } else {
-        FeUtils.getJsonFromString(visibleFieldsIn, function(err, visibleFieldsJson){
-          if(err){
-            MESSAGE_BOT.addMessage("Error on 'Visible Fields' field.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-            markComponentAsError($dataSetFullAreaElem,'dataSetVisibleFields');
-            console.log(err);
-          } else {
-            FeUtils.getJsonFromString(sortFieldsIn, function(err, sortFieldsJson){
-              if(err){
-                MESSAGE_BOT.addMessage("Error on 'Sort Options' field.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
-                markComponentAsError($dataSetFullAreaElem,'dataSetSortFields');
-                console.log(err);
-              } else {
-                fetchAndDrawDataSet(set, $dataSetFullAreaElem, visibleFieldsJson, filterFieldsJson , collectionIn, sortFieldsJson, skipValueIn, captionField, {
-                  independent : independent,
-                  connectFrom : connectFrom,
-                  connectTo : connectTo
-                });
-              }
-            });
-          }
-        });
+    validateDataSetInputs($dataSetFullAreaElem, set, function(err, validatedData) {
+      console.log(validatedData);
+      if(!err && validatedData){
+        fetchAndDrawDataSet(set, $dataSetFullAreaElem,
+            validatedData.visibleFieldsJson,
+            validatedData.filterFieldsJson ,
+            validatedData.collectionIn,
+            validatedData.sortFieldsJson,
+            validatedData.skipValueIn,
+            validatedData.captionField,
+            {
+              independent : validatedData.independent,
+              connectFrom : validatedData.connectFrom,
+              connectTo   : validatedData.connectTo
+            }
+        );
       }
     });
 
+  });
 
+
+  // json output
+  $('.kapuwaMainContainer').on('click','.dataSetJson', function(e) {
+
+    var set = $(this).data('set');
+    var jsonText = "";
+    var currentDataSet = allObjects[set];
+
+    // set title
+    var titleArray = [('Level '+set)];
+    var colInfo = $('#collectionInfo'+set).html();
+    if(colInfo){
+      titleArray.push(colInfo);
+    }
+    $('#jsonDisplayTitle').html( titleArray.join(', ') );
+
+
+    var dataObjToJsonDisplayIterator = function (datObjSet, level, isInArray) {
+      var textArray = [];
+      _.each(datObjSet, function(dataObj, key){
+
+        var value = dataObj;
+        var text = "";
+
+        if(dataObj===null){
+          text = "null"
+        } else if(typeof dataObj === 'object'){
+
+          var txtElem = ["{","","}"];
+          var inSubArray = false;
+
+          if(dataObj.constructor == Array){
+            value = 'Array';
+            txtElem[0] = "[";
+            txtElem[2] = "]";
+            inSubArray=true;
+          }
+          else if(dataObj.constructor == Object){
+            value = 'Object';
+          }
+
+          value = value + ' ['+ _.size(dataObj)+']';
+
+          if(level<=3){
+            txtElem[1] = dataObjToJsonDisplayIterator(dataObj, (level+1), inSubArray);
+            // add tabs
+            for (var i = 0; i < level; i++) {
+              txtElem[2] = "\t"+txtElem[2];
+            }
+            text = txtElem.join('\n');
+          } else {
+            text = '"'+value+'"';
+          }
+
+        } else if(typeof dataObj === 'string'){
+          text = '"'+dataObj+'"';
+        } else {
+          text = dataObj;
+        }
+
+        if(!isInArray){
+          text = '"'+key+'": '+text;
+        }
+
+        // add tabs
+        for (var i = 0; i < level; i++) {
+          text = "\t"+text;
+        }
+
+        textArray.push(text);
+      });
+
+      return textArray.join(',\n');
+    };
+
+    jsonText = dataObjToJsonDisplayIterator( currentDataSet, 1);
+    var $jsonDisplay = $('#jsonDisplay');
+    $jsonDisplay.height( $(window).height()*0.5 );
+    $jsonDisplay.text( '{\n'+ jsonText + '\n}' );
 
   });
+
 
 
   // expand data obj
@@ -402,6 +461,7 @@ function loadDataSetView(setNo, independent, disabled, cb){
       'dataSetNext',
       'levelNo',
       'collectionInfo',
+      'dataSetJson',
 
       'dataSetView',
       'dataSetArea'].forEach(function(field){
@@ -445,6 +505,60 @@ function updateCollectionSuggestions(){
       source: collectionList
     });
   }
+}
+
+// validate data set fields
+function validateDataSetInputs($parentElem, setNo, cb){
+
+  var collectionIn = $('input#dataSetCollection'+setNo).val();
+  var filterFieldsIn = $('textarea#dataSetFilterFields'+setNo).val();
+  var visibleFieldsIn = $('textarea#dataSetVisibleFields'+setNo).val();
+  var sortFieldsIn = $('textarea#dataSetSortFields'+setNo).val();
+  var skipValueIn = $('input#dataSkipValue'+setNo).val();
+  var captionField = $('input#dataSetCaptionField'+setNo).val();
+
+  var independent = $('button#dataFetch'+setNo).data('independent');
+  var connectFrom = $('input#dataSetConnectFrom'+setNo).val();
+  var connectTo = $('input#dataSetConnectTo'+setNo).val();
+
+  FeUtils.getJsonFromString(filterFieldsIn, function(err, filterFieldsJson){
+    if(err){
+      MESSAGE_BOT.addMessage("Error on 'Filters' field.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+      markComponentAsError($parentElem,'dataSetFilterFields');
+      console.log(err);
+      cb(true);
+    } else {
+      FeUtils.getJsonFromString(visibleFieldsIn, function(err, visibleFieldsJson){
+        if(err){
+          MESSAGE_BOT.addMessage("Error on 'Visible Fields' field.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+          markComponentAsError($parentElem,'dataSetVisibleFields');
+          console.log(err);
+          cb(true);
+        } else {
+          FeUtils.getJsonFromString(sortFieldsIn, function(err, sortFieldsJson){
+            if(err){
+              MESSAGE_BOT.addMessage("Error on 'Sort Options' field.", MESSAGE_BOT.MESSAGE_TYPES.ERROR);
+              markComponentAsError($parentElem,'dataSetSortFields');
+              console.log(err);
+              cb(true);
+            } else {
+              cb(false, {
+                visibleFieldsJson: visibleFieldsJson,
+                filterFieldsJson: filterFieldsJson,
+                collectionIn: collectionIn,
+                sortFieldsJson: sortFieldsJson,
+                skipValueIn: skipValueIn,
+                captionField: captionField,
+                independent : independent,
+                connectFrom : connectFrom,
+                connectTo : connectTo
+              });
+            }
+          });
+        }
+      });
+    }
+  });
 }
 
 
